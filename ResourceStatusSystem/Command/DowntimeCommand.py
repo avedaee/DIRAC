@@ -13,6 +13,9 @@ from DIRAC.ResourceStatusSystem.Command.Command                 import Command
 from DIRAC.ResourceStatusSystem.Utilities                       import CSHelpers
 from DIRAC.ConfigurationSystem.Client.Helpers.Resources         import getStorageElementOptions
 
+from urlparse import urlparse
+
+
 __RCSID__ = '$Id:  $'
 
 class DowntimeCommand( Command ):
@@ -106,6 +109,12 @@ class DowntimeCommand( Command ):
       if not seHost:
         return S_ERROR( 'No seHost for %s' % elementName )
       elementName = seHost
+
+    elif elementType == 'FTS':
+      #ftsCSList = CSHelpers.getFTS()['Value']
+      url = CSHelpers.getFTSurl( elementName )['Value']['endPoint']
+      # extracting the gocdb name from the URL of the FTS server
+      elementName = urlparse( url ).hostname
 
     return S_OK( ( element, elementName, hours, gocdbServiceType ) )
 
